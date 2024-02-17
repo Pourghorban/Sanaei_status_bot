@@ -1,0 +1,6 @@
+WPyrogram
+tgcrypto
+aiohttp[speedups]
+jdatetime
+configparser
+peewee
