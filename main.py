@@ -130,9 +130,22 @@ async def handleMsg(bot, update):
     mode = 1
     try:
         port = int(update.text)
-        existing_port = Inbounds.select().where(Inbounds.user_id == update.from_user.id and Inbounds.port == port).first()
+        existing_port = Inbounds.select().where(
+            (Inbounds.user_id == update.from_user.id) & (Inbounds.port == port)).first()
 
-        if not existing_port:
+        if existing_port:
+            config = await get_inbound(port)
+            keyboard = InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(text=config[5], callback_data=str(port)),
+                    ]
+                ]
+            )
+
+            await bot.send_message(update.chat.id, text="این کانفیگ قبلاً اضافه شده است!", reply_markup=keyboard)
+
+        else:
             req_inbound = await get_inbound(port)
             new_inbound = Inbounds.create(port=port, user_id=update.from_user.id, remark=req_inbound[5])
 
@@ -170,9 +183,21 @@ async def handleMsg(bot, update):
                 raise
 
             existing_port = Inbounds.select().where(
-                Inbounds.user_id == update.from_user.id and Inbounds.port == port).first()
+                (Inbounds.user_id == update.from_user.id) & (Inbounds.port == port)).first()
 
-            if not existing_port:
+            if existing_port:
+                config = await get_inbound(port)
+                keyboard = InlineKeyboardMarkup(
+                    inline_keyboard=[
+                        [
+                            InlineKeyboardButton(text=config[5], callback_data=str(port)),
+                        ]
+                    ]
+                )
+
+                await bot.send_message(update.chat.id, text="این کانفیگ قبلاً اضافه شده است!", reply_markup=keyboard)
+
+            else:
                 req_inbound = await get_inbound(port)
                 new_inbound = Inbounds.create(port=port, user_id=update.from_user.id, remark=req_inbound[5])
 
